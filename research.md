@@ -1,4 +1,4 @@
-As a feline statistician, my research interests span a variety of topics related to cat behavior, health, and well-being. Below are some examples of my recent research projects:
+<!--As a feline statistician, my research interests span a variety of topics related to cat behavior, health, and well-being. Below are some examples of my recent research projects:
 
 ## A Bayesian Approach to Modeling Catnip Preference
 
@@ -13,3 +13,4 @@ As a feline statistician, my research interests span a variety of topics related
 
 My research has been published in top-tier statistical and computational journals, including the Journal of the American Statistical Association and the Proceedings of the International Conference on Machine Learning. Please refer to my publications page for a complete list of my research articles.
   
+-->
