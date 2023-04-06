@@ -1,3 +1,4 @@
+<!--
 As a feline statistician, I have had the opportunity to present my research at various academic conferences and seminars. Here are some examples of my recent talks:
 
 - Cats vs Dogs: A Statistical Analysis of Pet Ownership
@@ -8,3 +9,4 @@ As a feline statistician, I have had the opportunity to present my research at v
 
 - Bayesian Analysis of Litter Box Behavior in Multi-cat Households
   - Presented at the Joint Statistical Meetings, 2020. 
+-->
