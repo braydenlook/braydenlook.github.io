@@ -3,8 +3,19 @@
 
 @import "{{ site.theme }}";
 
+#body {
+#  background-color: #F6F5F5;
+#}
+
 body {
-  background-color: #F6F5F5;
+  min-height: 100vh;
+  height: 100%;
+  width: 100vw; 
+  background-image: linear-gradient(to bottom, #F6F5F5 10%, green 10% 60%, blue 60%);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0px;   
 }
 
 a {
