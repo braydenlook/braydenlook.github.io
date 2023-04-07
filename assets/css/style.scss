@@ -18,6 +18,11 @@ a {
   text-decoration:none;
 }
 
+div.wrapper > section.custom_section > div.tabs {
+  background-color:transparent;
+  #color:#F6F5F5;
+}
+
 div.wrapper > section.custom_section > div.tabs > div.tabContent {
   background-color:transparent;
   #color:#F6F5F5;
