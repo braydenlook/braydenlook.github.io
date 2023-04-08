@@ -6,7 +6,8 @@
 body {
   min-height: 100vh;
   height: 100%;
-  width: 100vw; 
+  width: 90vw; 
+  
   background-color: #F6F5F5;
   background: linear-gradient(to bottom,   #FFE3E3 0%,#FFE3E3 25%,#E4D8DC 25%,#E4D8DC 50%,#C9CCD5 50%,#C9CCD5 75%,#93B5C6 75%,#93B5C6 100%);
 }
@@ -30,6 +31,8 @@ header {
   -webkit-font-smoothing:subpixel-antialiased;
 }
 /*makes sure the page isn't too wide?*/
+/*
 * {
   box-sizing: border-box
 }
+*/
