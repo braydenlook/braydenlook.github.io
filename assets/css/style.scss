@@ -11,8 +11,7 @@ body {
   background: linear-gradient(to bottom,   #FFE3E3 0%,#FFE3E3 25%,#E4D8DC 25%,#E4D8DC 50%,#C9CCD5 50%,#C9CCD5 75%,#93B5C6 75%,#93B5C6 100%);
 }
 
-
-
+#font stuff for name in top left
 a {
   color:#276678;
   text-decoration:none;
@@ -23,9 +22,14 @@ div.wrapper > section.custom_section > div.tabs > div.tabContent {
   #color:#F6F5F5;
 }
 
+
 header {
   width:270px;
   float:left;
-  position:absolute;
+  position:absolute;#changing this to 'fixed' will let it scroll with the page
   -webkit-font-smoothing:subpixel-antialiased;
+}
+#makes sure the page isn't too wide?
+* {
+  box-sizing: border-box
 }
