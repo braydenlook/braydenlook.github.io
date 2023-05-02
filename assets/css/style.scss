@@ -108,6 +108,10 @@ img {
   max-width:100%;
 }
 
+div.wrapper > section.custom_section > div.tabs > div.tabContent {
+  background-color:transparent;
+}
+
 kbd {
   background-color: #fafbfc;
   border: 1px solid #c6cbd1;
