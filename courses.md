@@ -1,14 +1,15 @@
-<!--
-# Catnip College
-- STAT 101: Introduction to Feline Statistics
-- STAT 201: Bayesian Inference for Cat Behavior
-- STAT 301: Machine Learning for Cat Health
-# Cat State University
-- STAT 501: Advanced Topics in Feline Regression Models
-# Meow-vard University
-- MATH 101: Calculus for Cats
-Note: Course offerings are subject to change each semester. Please refer to the official course catalog for the most up-to-date information.
--->
+Here are some relevant and/or enjoyable courses I've taken:
+
+# Colorado State University
+- STAT 530: Mathematical Statistics
+- STAT 555: Statistical Consulting
+- STAT 520: Data Analysis and Regression
+# UCLA
+- ECE 113: Digital Signal Processing
+- ECE 114: Speech and Image Processing
+- ECE C143A: Neural Signal Processing
+- ECE 133A: Applied Numerical Computing
+
 
 
 
