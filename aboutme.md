@@ -2,4 +2,4 @@ Hello, I'm a former electrical engineer and current graduate student in the Stat
 
 Testing: 
 
-$\int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}$
+$$\int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}$$
