@@ -2,7 +2,4 @@ theme: jekyll-theme-minimal
 title: uhh
 logo: website_photo.PNG
 description: 
-markdown: kramdown
-kramdown:
-    math_engine: katex
 
