@@ -2,4 +2,6 @@ theme: jekyll-theme-minimal
 title: uhh
 logo: website_photo.PNG
 description: 
-use_math: true
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
