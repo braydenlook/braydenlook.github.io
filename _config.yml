@@ -4,4 +4,4 @@ logo: website_photo.PNG
 description: 
 markdown: kramdown
 kramdown:
-  math_engine: mathjax
+    math_engine: katex
