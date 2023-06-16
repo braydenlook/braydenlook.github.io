@@ -1,26 +1,9 @@
 <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 <!-- Setup Google Analytics -->
 {% include head-custom-google-analytics.html %}
-
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$$','$$'], ["\\(","\\)"] ],
-      displayMath: [ ['$$','$$'], ["\\(","\\)"] ],
-    },
-    TeX: {
-      Macros: {
-        bra: ["\\langle{#1}|", 1],
-        ket: ["|{#1}\\rangle", 1],
-        braket: ["\\langle{#1}\\rangle", 1],
-        bk: ["\\langle{#1}|{#2}|{#3}\\rangle", 3]
-     }
-   }
-  });
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-MML-AM_CHTML' async></script>
 <!-- Testing if this is doing anything -->
 <!-- You can set your favicon here -->
 <!-- link rel="shortcut icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}" -->
