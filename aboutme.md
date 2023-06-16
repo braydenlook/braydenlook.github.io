@@ -8,4 +8,8 @@ $$\int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}$$
 
 \[ \int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}\]
 
+\\( \int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}\\)
+
+\\[ \int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}\\]
+
 $\int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}$
