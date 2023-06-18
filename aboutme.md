@@ -1,6 +1,4 @@
 ---
-layout: post
-title: KaTeX with Jekyll
 katex: True
 ---
 
