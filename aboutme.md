@@ -4,6 +4,8 @@ Testing:
 
 $$\int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}$$
 
+\$$\int_{\partial \Omega} \omega = \int_{\Omega} d\omega\$$
+
 \( \int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}\)
 
 \[ \int e^{-kx} \, dx = -\frac{1}{k} e^{-kx}\]
