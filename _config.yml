@@ -4,4 +4,3 @@ logo: website_photo.PNG
 description: 
 kramdown:
     math_engine: katex
-katex: True
