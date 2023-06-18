@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
     {% include head-custom.html %}
-  
+  {% if page.katex %}
   <!-- CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"/>
   
@@ -25,6 +25,7 @@
         { left: '\\(', right: '\\)', display: false }
     ]});">
   </script>
+  {% endif %}
   </head>
   <body>
     <div class="wrapper">
