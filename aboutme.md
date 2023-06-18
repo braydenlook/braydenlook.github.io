@@ -1,6 +1,5 @@
 ---
 layout: default
-title: KaTeX with Jekyll
 katex: True
 ---
 
