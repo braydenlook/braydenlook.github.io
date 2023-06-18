@@ -3,5 +3,4 @@ title: uhhh
 logo: website_photo.PNG
 markdown: kramdown
 kramdown:
-  math_engine: katex
-katex: true
+  math_engine: mathjax
