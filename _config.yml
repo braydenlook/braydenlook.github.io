@@ -1,6 +1,3 @@
 theme: jekyll-theme-minimal
 title: uhhh
 logo: website_photo.PNG
-markdown: kramdown
-kramdown:
-  math_engine: mathjax
