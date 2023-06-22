@@ -1,0 +1,259 @@
+---
+layout: post
+title:  "Streaks"
+date:   2022-06-21 10:27:48 -0600
+categories: jekyll update
+---
+I was interested in the probability of observing a streak of 1s within a sequence of 1s and 0s and figured that there was a simple closed form solution for such a problem. When I looked it up, it was kind of a disgusting formula, so I was curious how it could be solved. If we think of the sequence as a binomial random variable with a generic probability $$p$$ of a 1 occurring, the problem becomes even more complicated. I opted to let $$p=0.5$$ and solve it as a combinatorics problem.
+
+The process was somewhat interesting and did not go in the same direction as the solution I found online, so I wanted to share that thought process.
+
+### Notation
+
+Consider the set of all length $$L$$ sequences of 1s and 0s. Define $$\mathcal{A}_L$$ to be this set. Call each member of $$\mathcal{A}_L$$ an $$L$$-sequence. How many $$L$$-sequences in $$\mathcal{A}_L$$ contain a *streak* of 1's of **at least** length $$M$$? Here we define a *streak* of length $$M$$ to be $$M$$ consecutive 1's.
+
+For example, let $$L = 4$$, $$M = 2$$. There are $$2^4 = 16$$ sequences in $$\mathcal{A}_4$$, and 8 of them contain an $$M$$-streak (highlighted green):
+
+<p align="center">
+    <img width="125" src="/images/streaks1.png">
+</p>
+
+Denote the number of $$M$$-streaks in an $$L$$-sequence as $$f(L, M)$$. Hence, $$f(4, 2) = 8$$. How do we find a formula for $$f$$? 
+
+### Boundary Points
+
+First, let's consider possible values for $$f(L, M)$$, starting with $$L$$. Clearly it doesn't make sense for $$L$$ to be less than zero, and we can see that $$\mathcal{A}_0 = \{\varnothing\}$$, so define $$f(L, M) = 0$$ for $$L \le 0 \,\, \forall \,\, M$$. 
+
+For $$M$$, we should also require it to be greater than $$0$$, but we should make sure to restrict $$f$$ to cases where $$L \ge M$$; clearly there are no streaks of length 6 in a sequence of length 5.
+
+What about when $$M = 0$$? How many streaks of length $$0$$ are there in $$\mathcal{A}_L$$? There are two reasonable options: either $$f(L, 0) = 2^L$$, or $$f(L, 0) = 0$$. Let's go with the former and assume that every sequence in $$\mathcal{A}_L$$ has a zero streak.
+
+Thus, $$f(L, M)$$ is defined for $$L = 1, 2,...$$ and $$M = 0, 1, 2, ..., L$$. Otherwise, it's zero.
+
+### M=2 Approach
+
+Before jumping into the formula, let's gain some intuition for the type of problem this is by fixing $$M = 2$$ and seeing what occurs when $$L$$ changes. Let's think about starting with $$\mathcal{A}_L$$ and seeing how we get to $$\mathcal{A}_{L+1}$$ by 'growing' our sequences:
+
+<p align="center">
+    <img width="400" src="/images/streaks2.png">
+</p>
+
+If we fix $$M=2$$ and let $$L = 1, 2, 3, 4$$ we get $$f(1, 2) = 0$$, $$f(2, 2) = 1$$, $$f(3, 2) = 3$$, and $$f(4, 2) = 8$$. The diagram above where we 'grow' our sequences can illuminate a few things for us.
+
+First notice that whatever $$M$$-streaks we have in $$\mathcal{A}_L$$, we also have in $$\mathcal{A}_{L+1}$$. In fact, we can say that we will always have at least twice as many streaks in $$\mathcal{A}_{L+1}$$ as we do in $$\mathcal{A}_{L}$$, because as we 'grow' our sequences, we take our original sequences and add a 0 to it and a 1.
+
+To explain further, take a look at $$\mathcal{A}_2$$. We have only one with a streak, $$[1, 1]$$. When we go from $$\mathcal{A}_2$$ to $$\mathcal{A}_3$$, we 'grow' our sequences by adding a $$0$$ to the front of them all, and then by adding a $$1$$ to the front of them all. Thus, we know that we will have $$[0, 1, 1]$$ and $$[1, 1, 1]$$ as streaks in $$\mathcal{A}_3$$.
+
+This is immensely helpful to us, because now we can have some semblance of a formula for $$f$$:
+
+$$f(L, M) = 2f(L-1, M) + \text{something}$$
+
+Our goal now is to figure out the 'something' part. So far, we know that a streak in $$\mathcal{A}_{L}$$ will turn into 2 streaks in $$\mathcal{A}_{L+1}$$. If we keep thinking about this in terms of 'growing' sequences, what do we need for a sequence to go from not containing a streak to containing one? In the $$M=2$$ case illustrated above, we can see that a sequence without a streak will turn into one if it has a leading 1.
+
+For example, in $$\mathcal{A}_2$$, we have $$[0, 0]$$, $$[0, 1]$$ and $$[1, 0]$$ as non-streaks. When we 'grow' our sequences, $$[0, 0]$$ will turn into $$[0, 0, 0]$$ and $$[1, 0, 0]$$, $$[0, 1]$$ will turn into $$[0, 0, 1]$$ and $$[1, 0, 1]$$, and $$[1, 0]$$ will turn into $$[0, 1, 0]$$ and $$[1, 1, 0]$$. So only $$[1, 0]$$ turned into a streak.
+
+What can we take away from this? Clearly, if we take a sequence with no streaks and add a 0 to it, it will not suddenly have a streak. If we add a 1 to it, we will get a streak IF the sequence already had a leading 1. Let's label these sequences as 'almosts' and color them yellow:
+  
+<p align="center">
+    <img width="400" src="/images/streaks3.png">
+</p>
+
+Now let's count how many 'almosts' we have for each $$L$$ and $$M$$, and denote this quantity as $$a(L, M)$$:
+
+$$
+\begin{align*}
+    a(1, 2) &= 1\\[10pt]
+    a(2, 2) &= 1\\[10pt]
+    a(3, 2) &= 2\\[10pt]
+    a(4, 2) &= 3\\[10pt]
+    a(5, 2) &= 5
+\end{align*}
+$$
+
+This sequence seems familiar, and indeed it is. If we keep checking $$a(L, 2)$$ for higher $$L$$ values, we'll find that it is the Fibonacci sequence. If we do this for other values of $$M$$, we'll find that $$a(L, M)$$ follows a generalized $$M^{th}$$ order Fibonacci sequence, where we add the previous $$M$$ values. 
+
+In other words, $$a(L, 2)$$ can be represented as
+
+$$a(L, 2) = a(L-1, 2) + a(L-2, 2)$$
+
+$$a(L, 3)$$ can be represented as
+
+$$a(L, 3) = a(L-1, 3) + a(L-2, 3) + a(L-3, 3)$$
+
+and so on, with initial conditions that $$a(0, M) = a(1, M) = ... = a(M-2, M) = 0$$
+
+We can now say that we have a formula for $$f$$:
+
+$$f(L, M) = 2f(L-1, M) + a(L-1, M)$$
+
+In (mostly) English, it says that the number of $$M$$-streaks in $$\mathcal{A}_L$$ is equal to 2 times the number of $$M$$-streaks in $$\mathcal{A}_{L-1}$$ plus the number of 'almost' $$M$$-streaks in $$\mathcal{A}_{L-1}$$. How does this help us if we still don't have explicit closed form expressions for $$f$$ OR $$a$$? Let's try to expand our $$f$$ recursion by plugging in $$f$$ into itself on the right hand side:
+
+$$
+\begin{align*}
+    f(L, M) &= 2f(L-1, M) + a(L-1, M)\\[10pt]
+    &= 2[2f(L-2, M) + a(L-2, M)] + a(L-1, M)\\[10pt]
+    &= 2[2[2f(L-3, M) + a(L-3, M)] + a(L-2, M)] + a(L-1, M)\\[10pt]
+    &= ... \\[10pt]
+    &= a(L-1, M) + 2a(L-2, M) + 2^2a(L-3, M) + 2^3a(L-4, M) + ...
+\end{align*}
+$$
+
+It seems like we're no closer to our goal because we still have no closed form solution for $$a$$. What we can do to solve this is use *generating functions*. Electrical engineers may see analogs to z-transforms, while statisticians may see analogs to MGFs. First, clean things up by making $$L, M$$ subscripts instead of arguments, and then drop $$M=2$$ since we're keeping it constant. That is, let $$a(L, 2) = a_{L, 2} = a_L$$. Then we define
+
+$$A(x) = \sum_{L=0}^{\infty} a_Lx^L = a_0 + a_1x + a_2x^2 + ...$$
+
+That is, we define the sequence $$\{a_L\}_{L=0}^{\infty}$$ to be the coefficients for some unknown infinite power series, $$A(x)$$. Then take the recursion formula we would like to solve,
+
+$$
+\begin{align*}
+    a_L &= a_{L-1} + a_{L-2}
+\end{align*}
+$$
+
+multiply both sides by $$x^L$$, and sum over $$L$$ from 2 to $$\infty$$,
+
+$$
+\begin{align*}
+    \sum_{L = 2}^{\infty} a_Lx^{L} &= \sum_{L = 2}^{\infty} a_{L-1}x^{L} + \sum_{L = 2}^{\infty} a_{L-2}x^{L}\\[10pt]
+    [a_2x^2 + a_3x^3 + ...] &= [a_1x^2 + a_2x^3 + ...] + [a_0x^2 + a_1x^3 + ...]\\[10pt]
+    [A(x) - a_0 - a_1x] &= [x(A(x) - a_0)] + [x^2A(x)]\\[10pt]
+    [A(x) - x] &= [xA(x)] + [x^2A(x)]\\[10pt]
+    \implies A(x) &= \frac{x}{1-x-x^2}
+\end{align*}
+$$
+
+In the second-to-last line we use the initial conditions established earlier to say that $$a_0 = 0$$ and $$a_1 = 1$$. If generating functions are new to you, what we just did might seem like magic. But not only that, it might seem like useless magic; we now have a function in terms of $$x$$... so what?
+
+By the way that we defined $$A(x)$$ originally, we know that $$a_L$$ will be the $$L^{th}$$ coefficient of the infinite power series $$A(x)$$. So all we have to do is expand $$A(x)$$ to find an expression for $$a_L$$.
+
+To expand $$A(x)$$, we would do a partial fraction decomposition and find that
+
+$$
+\begin{align*}
+    A(x) = \frac{x}{1-x-x^2} &= \frac{1}{\sqrt{5}}\left[\frac{1}{1-x(1+\sqrt{5}/2)} - \frac{1}{1-x(1-\sqrt{5}/2)} \right]\\[10pt]
+    &= \frac{1}{\sqrt{5}}\left[\frac{1}{1-x\phi} - \frac{1}{1-x\psi} \right]
+\end{align*}
+$$
+
+Where in the last line we let $$\phi = (1+\sqrt{5}/2)$$ and $$\psi = (1-\sqrt{5}/2)$$
+
+Then we use the general fact that 
+
+$$\frac{1}{1-xr} = \sum_{n=0}^{\infty} (rx)^n$$
+
+To say that 
+
+$$a_L = \frac{1}{\sqrt{5}}\left[\phi^L - \psi^L \right]$$
+
+Now that we have an expression for $$a_L$$, we need to go back to our original formula to find an expression for $$f_L$$ (again, let's stick with $$M=2$$ for now and continue to omit the $$M$$ subscript/argument). Let's also rewrite it so that we're solving for the $$(L+1)^{th}$$ term instead of the $$L^{th}$$. This will make notation a tad easier for us later. Then we have:
+
+$$
+\begin{align*}
+    f_{L+1} &= a_{L} + 2a_{L-1} + 2^2a_{L-2} + ... + 2^{L}a_0
+\end{align*}
+$$
+
+Here we're going to take another leap that is not obvious, but will be stated as if it was. First, some notation: if $$A(x)$$ is a power series whose coefficients are some sequence $$\{a_n\}_{n=0}^{\infty}$$, denote such a relationship as $$A \leftrightarrow \{a_n\}$$. Then if 
+
+$$A \leftrightarrow \{a_n\},$$
+
+and
+
+$$B \leftrightarrow \{b_n\},$$
+
+then
+
+$$AB \leftrightarrow \{\sum_{n=0}^j a_nb_{j-n}\}_{j=0}^{\infty}$$
+
+The notation is dense, but the meaning is simple: this says is that if we multiply two power series together, $$A$$ and $$B$$, the coefficients of the new power series, $$AB$$, are just a convolution of the coefficients of $$A$$ and $$B$$. (Another parallel to z-transforms and MGFs).
+
+The expression we have for $$f_{L+1}$$ above is indeed a convolution of two sequences, where $$A(x)$$ is the power series function we defined earlier for the Fibonacci sequence, and $$B(x)$$ is the sequence $$\{2^0, 2^1, 2^2, 2^3,...\}$$. 
+
+Now all that needs to be done is to repeat the process and solve for some expression for the power series of $$f_L$$ which we will denote as $$F(x)$$
+
+$$
+\begin{align*}
+    F(x) = A(x)B(x) &= \frac{x}{1-x-x^2}\frac{1}{1-2x}\\[10pt]
+    &= \frac{2}{1-2x} + \frac{x + 2}{1-x-x^2}\\[10pt]
+    &= \frac{2}{1-2x} + \frac{2}{1-x-x^2} + \frac{x}{1-x-x^2}\\[10pt]
+    &= 2B + \frac{2A}{x} + A
+\end{align*}
+$$
+
+Let's pause to interpret this equation. This equation is telling us that the $$(L+1)^{th}$$ coefficient of the power series $$F(x)$$ is the sum of the $$L^{th}$$ coefficients of the power series $$2B$$, $$2A/x$$, and $$A$$. Thus, if we can find closed form representations of each of these individual sequences, we're done. 
+
+We already know $$A$$; we solved for that earlier. $$B$$ is straightforward: the $$L^{th}$$ value is just $$2^L$$, and so the $$L^{th}$$ value of $$2B$$ is $$2^{L+1}$$. What is $$A/x$$? Let's write out some terms to check:
+
+$$
+\begin{align*}
+    A(x) &= a_0 + a_1x + a_2x^2 + ...\\[10pt]
+    \implies \frac{A(x)}{x} &= a_0/x + a_1 + a_2x + ...\\[10pt]
+    &= a_1 + a_2x + a_3x^2 + ...
+\end{align*}
+$$
+
+Since $$a_0$$ is defined to be 0 when $$M=2$$, $$A(x)/x$$ is just $$A(x)$$ moved up one term! Thus, we can write this as:
+
+$$f_{L+1} = 2^{L+1} - 2a_{L+1} - a_{L}$$
+
+Where $$a_L$$ is the $$L^{th}$$ term of the Fibonacci sequence, given by
+
+$$a_L = \frac{1}{\sqrt{5}}\left[\phi^L - \psi^L \right]$$
+
+Finally, we can simplify by using properties of the Fibonacci sequence:
+
+$$
+\begin{align*}
+    f_{L+1} &= 2^{L+1} - 2a_{L+1} - a_{L}\\[10pt]
+    &= 2^{L+1} - \underbrace{(a_{L+1} + a_{L})}_{a_{L+2}} - a_{L+1}\\[10pt]
+    &= 2^{L+1} - \underbrace{(a_{L+2} + a_{L+1})}_{a_{L+3}}\\[10pt]
+    &= 2^{L+1} - a_{L+3}
+\end{align*}
+$$
+
+### Formula for any M
+
+Let's try to generalize what we just did for the $$M=2$$ case. Note that our generic formula for $$f$$ still holds:
+
+$$f_{L+1, M} = a_{L, M} + 2a_{L-1, M} + 2^2a_{L-2, M} + ... + 2^{L}a_{0, M}$$
+
+But we now have an extra subscript to acknowledge. Note that our $$a$$ coefficients are no longer the Fibonacci coefficients, but the more general $$M^{th}$$ order Fibonacci coefficients. Thus, our first step is to find the power series, $$A_M(x)$$, that represents these coefficients. The work is tedious, so we'll skip to the end and state directly that the power series for an $$M^{th}$$ order Fibonacci sequence is given by
+
+$$A_{M}(x) = \frac{x^{M-1}}{1-x-x^2-...-x^{M}}$$
+
+Since we have the same general equation for $$f$$ as before, we know again that we have a convolution between $$A_M(x)$$ and $$B(x)$$, where $$B(x)$$ is the same sequence of powers of 2 as before. Again skipping tedious algebra, we find this relation:
+
+$$
+\begin{align*}
+    F(x) = A_M(x)B(x) &= \frac{x^{M-1}}{p(x)} \frac{1}{1-2x}\\[10pt]
+    &= \frac{2}{1-2x} - \frac{2}{p(x)} - \frac{2x}{p(x)} - ... - \frac{2x^{M-1}}{p(x)} - \frac{x^{M-1}}{p(x)}\\[10pt]
+    &= 2B - 2A_M/x^{M-1} - 2A_M/x^{M-2} - ... - 2A_M/x - A_M
+\end{align*}
+$$
+
+Where $$p(x) = 1 - x - x^2 - ... - x^M$$. 
+
+Following the same procedure as before, we find a similar formula:
+
+$$
+\begin{align*}
+    f_{L+1, M} &= 2^{L+1} - 2a_{L+(M-1), M} - 2a_{L+(M-1)-1, M} - ... - 2a_{L+1, M} - a_{L, M}\\[10pt]
+    &= 2^{L+1} - \underbrace{(a_{L+(M-1), M} + ... + a_{L+1, M})}_{a_{L+M}} - (a_{L+(M-1), M} + ... + a_{L+1, M} + a_{L, M})\\[10pt]
+    &= 2^{L+1} - \underbrace{(a_{L+M} + a_{L+(M-1), M} + ... + a_{L+1, M} + a_{L, M})}_{a_{L+M+1}}\\[10pt]
+    &= 2^{L+1} - a_{L+M+1, M}
+\end{align*}
+$$
+
+Now we need to find a formula for the $$L^{th}$$ coefficient for an $$M^{th}$$ order Fibonacci sequence. 
+
+Taking Wikipedia's word for it, it can be shown that the $$L^{th}$$ coefficient of an $$M^{th}$$ order Fibonacci sequence is the integer nearest to
+
+$$a_{L, M} = \frac{r^{L-1}(r-1)}{(M+1)r - 2M}$$
+
+where $$r$$ is the root of $$x + x^{-M} = 2$$ closest to 2. So even though we have a "closed form", we still need to numerically solve for a root and then round the equation to get our final answer.
+
+Interestingly, Wikipedia's solution to the same problem seems to be incorrect. They state that the number of streaks for any M is 
+
+$$2^{L+1} - a_{L+3, M},$$
+
+which only holds for $$M=2$$
