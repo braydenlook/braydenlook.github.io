@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Streaks"
-date:   2022-06-21 10:27:48 -0600
+date:   2023-06-21 10:27:48 -0600
 categories: jekyll update
 ---
 I was interested in the probability of observing a streak of 1s within a sequence of 1s and 0s and figured that there was a simple closed form solution for such a problem. When I looked it up, it was kind of a disgusting formula, so I was curious how it could be solved. If we think of the sequence as a binomial random variable with a generic probability $$p$$ of a 1 occurring, the problem becomes even more complicated. I opted to let $$p=0.5$$ and solve it as a combinatorics problem.
