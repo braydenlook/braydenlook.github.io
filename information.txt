@@ -1,0 +1,23 @@
+This is just a document with information so that I don't forget how to update this site:
+
+The layouts directory is for the layout of the html/css. The post layout is for a blog post. I think the page layout is for a new page that isn't necessarily a post. It's an inheritance based structure, so every layout inherits the html in _default and then builds on it.
+
+To make changes and view them locally, open up git bash, navigate to the website source (c:\users\brayd\documents\website_test\testing_site at the time of writing this), and execute "bundle exec jekyll serve". I think you can also just type "bundle" but I'm not sure what the difference is. Then copy the server address and paste it into a web browser to view the site. All changes can be viewed by refreshing the page except config.yml. If you change that, you need to terminate the connection (ctrl+c in git bash) and then reconnect by typing in "bundle exec jekyll serve" again.
+
+main.scss is where to make changes to the css (stuff like background colors, fonts, structure, etc.) Before it was also inheritance based; it would import minima.scss, which imported base.scss, layout.scss, and syntax-highlighting.scss. However, when I made changes to those things, it wouldn't do anything. Here's how I think it's supposed to work: the source files are located in C:\Ruby32-x64\lib\ruby\gems\3.2.0\gems\minima-2.5.1. When you use the minima theme, you don't have most of the folders that are in my source. It pulls those files from this ruby directory. If you want to customize stuff, you need to add those folders into your source and change them. So it should first try to pull from your local source, and then go to the ruby directory if it can't find them. That works for the layouts folder and stuff. However, I think that when you use the "import" command, it's looking in the ruby directory first instead of the local one. At least that's my guess. So I had to put everything in minima.scss, layouts.scss, etc. into main.scss directly to make changes.
+
+I think you create variables in scss by using a dollar sign. E.g., at the top you can set ```text $background-color: #fcfbf7 !default;"```. Then down in the "body" section you can set "  background-color: $background-color;" which will set the color to #fcfbf7. Useful if you want to change multiple things at a time to a different color. I don't know if the "!default;" part is necessary.
+
+Posts are a little weird. I need to experiment with this more, but it seems like .md files are treated differently than .markdown files, and I don't think they'll work properly if I use .md. I think posts need to also start with a date in the format year-month-day-[title] for them to show up on the site. Markdown files also have no problem rendering html, so if something doesn't have a nice markdown equivalent, you can do it directly in html. For example, I don't know how to center images in markdown, so in the streaks .markdown file I use html code which worked well.
+
+The config file can be used for lots of things, but one useful thing is for conditionals. For example, the footer has html code that looks like this:
+
+{%- if site.foot_author -%} 
+
+    {{ site.author | escape }} 
+
+Which is an if statement that says: if foot_author is true, then display author. Before, the footer said my name like 3 different times. I set "foot_author: false" in the config, which won't execute {{ site.author | escape }}, which puts a footer with the author name at the bottom. I don't understand yet what the site object is that precedes these commands or how it works exactly. I'm assuming I can have different types of objects to apply these things to, but I don't know why or how I would implement that (or distinguish between different objects in the config file (because I don't think setting site.foot_author: false does the same thing (could be wrong, should probably double check))).
+
+To add different links to the header, I can (mostly) do it in the config file under the header_pages thing. The problem is that I think this only works for .markdown files. I tried to get it to work with my resume (a pdf), and it didn't work. I just added explicit html code in the header.html file. There's probably a way to get it to work via the config file, but I haven't parsed the header.html file and fully comprehended it yet.
+
+At some point I should look into these things more closely and write a well-structured tutorial/guide but this is fine for now so that I don't forget basic stuff.
