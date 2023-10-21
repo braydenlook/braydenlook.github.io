@@ -1,10 +1,10 @@
 ---
 layout: post
 title:  "Streaks"
-date:   2022-06-21 10:27:48 -0600
+date:   2023-06-21 10:27:48 -0600
 categories: jekyll update
 ---
-I was interested in the probability of observing a streak of 1s within a sequence of 1s and 0s and figured that there was a simple closed form solution for such a problem. When I looked it up, it was kind of a disgusting formula, so I was curious how it could be solved. If we think of the sequence as a binomial random variable with a generic probability $$p$$ of a 1 occurring, the problem becomes even more complicated. I opted to let $$p=0.5$$ and solve it as a combinatorics problem.
+I was interested in the probability of observing a streak of 1s within a sequence of 1s and 0s and figured that there was a simple closed form solution for such a problem. When I looked it up, it was kind of a disgusting formula, so I was curious how it could be solved. If we think of the sequence as a binomial random variable with a generic probability $$p$$ of a 1 occurring, the problem becomes even more complicated. I opted to let $$p=0.5$$ and solve it as a combinatorics problem. Also, [Wikipedia](https://en.wikipedia.org/wiki/Generalizations_of_Fibonacci_numbers#Similar_integer_sequences#:~:text=The%20probability%20that%20no) and [Wolfram's](https://mathworld.wolfram.com/CoinTossing.html) answer to the problem seems to be wrong.
 
 The process was somewhat interesting and did not go in the same direction as the solution I found online, so I wanted to share that thought process.
 
