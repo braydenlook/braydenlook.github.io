@@ -1,12 +1,12 @@
 ---
 layout: post
-title:  "Streaks"
+title:  "Probability of Observing Streaks in Binary Data"
 date:   2023-06-21 10:27:48 -0600
 categories: jekyll update
 ---
-I was interested in the probability of observing a streak of 1s within a sequence of 1s and 0s and figured that there was a simple closed form solution for such a problem. When I looked it up, it was kind of a disgusting formula, so I was curious how it could be solved. If we think of the sequence as a binomial random variable with a generic probability $$p$$ of a 1 occurring, the problem becomes even more complicated. I opted to let $$p=0.5$$ and solve it as a combinatorics problem. Also, [Wikipedia](https://en.wikipedia.org/wiki/Generalizations_of_Fibonacci_numbers#Similar_integer_sequences#:~:text=The%20probability%20that%20no) and [Wolfram's](https://mathworld.wolfram.com/CoinTossing.html) answer to the problem seems to be wrong.
+On March 29th, 2023, Russell Westbrook, a remarkably shitty three-point shooter, made five three-point shots in a row. I was curious how rare of an event this was and wanted to see if I could come up with a formula for the probability of observing a streak of 1s of some length $$M$$ in a sequence of 1s and 0s of total length $$L$$. A while back, I thought about a similar problem and figured there was a simple closed form solution for such a problem, but it turned out to be [pretty disgusting](https://www.askamathematician.com/2010/07/q-whats-the-chance-of-getting-a-run-of-k-successes-in-n-bernoulli-trials-why-use-approximations-when-the-exact-answer-is-known/). I started by opting to let $$p=0.5$$ and solve it as a simpler combinatorics problem. 
 
-The process was somewhat interesting and did not go in the same direction as the solution I found online, so I wanted to share that thought process.
+The process was somewhat interesting and did not go in the same direction as the solution I found online, so I wanted to share that thought process. Also, [Wikipedia](https://en.wikipedia.org/wiki/Generalizations_of_Fibonacci_numbers#Similar_integer_sequences#:~:text=The%20probability%20that%20no) and [Wolfram's](https://mathworld.wolfram.com/CoinTossing.html) answer to the problem (for the restricted $$p = 0.5$$) seems to be wrong.
 
 ### Notation
 
@@ -207,9 +207,12 @@ $$
     f_{L+1} &= 2^{L+1} - 2a_{L+1} - a_{L}\\[10pt]
     &= 2^{L+1} - \underbrace{(a_{L+1} + a_{L})}_{a_{L+2}} - a_{L+1}\\[10pt]
     &= 2^{L+1} - \underbrace{(a_{L+2} + a_{L+1})}_{a_{L+3}}\\[10pt]
-    &= 2^{L+1} - a_{L+3}
+    &= 2^{L+1} - a_{L+3}\\[10pt]
+	\implies f_{L} &= 2^{L} - a_{L+2}
 \end{align*}
 $$
+
+Note something interesting about this: The number of total sequences in $$\mathcal{A}_{L}$$ is $$2^L$$, and so this tells us that $$a_{L+2}$$ is exactly the number of sequences in $$\mathcal{A}_L$$ that do *not* contain a 2-streak.
 
 ### Formula for any M
 
@@ -240,20 +243,23 @@ $$
     f_{L+1, M} &= 2^{L+1} - 2a_{L+(M-1), M} - 2a_{L+(M-1)-1, M} - ... - 2a_{L+1, M} - a_{L, M}\\[10pt]
     &= 2^{L+1} - \underbrace{(a_{L+(M-1), M} + ... + a_{L+1, M})}_{a_{L+M}} - (a_{L+(M-1), M} + ... + a_{L+1, M} + a_{L, M})\\[10pt]
     &= 2^{L+1} - \underbrace{(a_{L+M} + a_{L+(M-1), M} + ... + a_{L+1, M} + a_{L, M})}_{a_{L+M+1}}\\[10pt]
-    &= 2^{L+1} - a_{L+M+1, M}
+    &= 2^{L+1} - a_{L+M+1, M}\\[10pt]
+	\implies f_{L, M} &= 2^{L} - a_{L+M, M}
 \end{align*}
 $$
 
 Now we need to find a formula for the $$L^{th}$$ coefficient for an $$M^{th}$$ order Fibonacci sequence. 
 
-Taking Wikipedia's word for it, it can be shown that the $$L^{th}$$ coefficient of an $$M^{th}$$ order Fibonacci sequence is the integer nearest to
+We'll look at a way to find this in a more clever way in the next post, but for now we'll take Wikipedia's word for it that the $$L^{th}$$ coefficient of an $$M^{th}$$ order Fibonacci sequence is the integer nearest to
 
-$$a_{L, M} = \frac{r^{L-1}(r-1)}{(M+1)r - 2M}$$
+$$a_{L, M} = \frac{r^{L-1}(r-1)}{(M+1)r - 2M},$$
 
 where $$r$$ is the root of $$x + x^{-M} = 2$$ closest to 2. So even though we have a "closed form", we still need to numerically solve for a root and then round the equation to get our final answer.
 
 Interestingly, Wikipedia's solution to the same problem seems to be incorrect. They state that the number of streaks for any M is 
 
-$$2^{L+1} - a_{L+3, M},$$
+$$2^{L} - a_{L+2, M},$$
 
-which only holds for $$M=2$$
+which only holds for $$M=2$$.
+
+In the next post, we'll look into an alternate way of solving this problem from a different perspective, as well as extending that method to cover the generic $$p$$ case.

@@ -1,0 +1,196 @@
+---
+layout: post
+title:  "Probability of Observing Streaks in Binary Data (Part 2)"
+date:   2023-11-01 10:27:48 -0600
+categories: jekyll update
+---
+
+### Recap
+
+Last time, we looked at how to solve for the number of length-$$L$$ binary sequences that contain a streak of 1s of length *at least* $$M$$. One thing I noted in the post was that extending the problem to a generic probability $$p$$ (rather than the specific $$p = 0.5$$ case) of observing a 1 was rather complicated.  Now we'll look at another solution from a new perspective, as well as how to extend it to the generic $$p$$ case.
+
+Let's go over some notation again: an $$L$$-sequence that contains an $$M$$-streak is a binary sequence of length $$L$$ with at least $$M$$ consecutive 1s somewhere in the sequence. We called the set of $$L$$-sequences $$\mathcal{A}_L$$, and our goal was to find the number of sequences in $$\mathcal{A}_L$$ that contain an $$M$$-streak.
+
+In this case we'll take a slightly different route. Rather than explicitely using generating functions to solve recursive formulas, we'll think about it as a state transition process from a matrix point of view. We'll also focus more directly on finding the number of *non*-$$M$$-streaks. That is, sequences that do not contain any streaks of at least length $$M$$. In this case we'll call these non-streaks *valid* sequences. 
+
+### Representing Sequences as a State Process
+
+Let's start by defining a state process via a graph:
+
+<p align="center">
+    <img width="250" src="/images/state_diagram.png">
+</p>
+
+Now let State A represent a 0, state B represent a 1, and state C represent two consecutive 1. By forcing state C to return to state A, sequences that contain at least three 1s in a row are not possible in this process. Thus, we have a process that describes sequences of arbitrary length $$L$$ that do *not* contain a streak of at least length 3.
+
+Note that not only does B represent a 1, it represents a 1 preceded by a zero (except when we begin at state B). Similarly, C represents a 1 that is preceded by a 1 and a 0. This will be helpful later.
+
+Define $$\mathbf{X}(L) = [X_A(L), X_B(L), X_C(L)]^T$$, where $$X_i(L)$$ is the number of valid $$L$$-sequences (remember that by valid we mean *no* 3-streaks) that end at state $$i$$. For example, let's let $$L = 4$$ and look at the possible cases:
+
+<p align="center">
+    <img width="125" src="/images/valid_states_example.png">
+</p>
+
+85C8DD
+FAA0A0
+
+Sequences colored <span style="color: #009B55;">green</span> are sequences that ended at <span style="color: #009B55;">state A</span>, sequences colored <span style="color: #75B2C6;">blue</span> are sequences that ended at <span style="color: #75B2C6;">state B</span>, and sequences colored <span style="color: #EC8989;">red</span> are sequences that ended at <span style="color: #EC8989;">state C</span>. Uncolored sequences are invalid sequences.
+
+Then $$\mathbf{X}(4)$$ = [<span style="color: #009B55;">7</span>, <span style="color: #75B2C6;">4</span>, <span style="color: #EC8989;">2</span>], and the total number of valid sequences is 13.
+
+
+### The recursion
+
+Let's think about how each component of $$\mathbf{X}$$ evolves. Let $$L = 5$$. We will represent the *form* of all valid length 5 sequences that end at state A as 
+
+$$\{\times \times \times\times \,0\},$$
+
+where $$\times$$ represents an unknown value. 
+
+Now see two useful facts:
+
+- Since we are assuming that $$\{\times \times \times \times \,0\}$$ is a valid sequence, then we are also assuming that the subsequence $$\{\times \times \times \,\times\}$$ is valid. 
+
+
+- Any valid $$L$$-sequence *stays* valid if we add a 0 to the end of it.
+
+Using these two facts, we can conclude that $$X_A(L) = X_A(L-1) + X_B(L-1) + X_C(L-1)$$. That is, the number of valid $$L$$-sequences that end at state A is equal to the number of total valid $$(L-1)$$-sequences. 
+
+We can do the same thing with sequences that end at state B: 
+
+$$\{\times \times \times\,0\, \,1\}.$$
+
+Once again, we examine the subsequence $$\{\times \times \times\,0\}$$. By definition, these are the valid sequences contained in $$X_A(4)$$. Then in general we can say that $$X_B(L) = X_A(L-1)$$.
+
+A similar argument will show $$X_C(L) = X_B(L-1)$$.
+
+Now we have a recursive relationship between these quantities things that we can represent with a matrix equation:
+
+$$
+\begin{align*}
+    \mathbf{X}(L) = 
+    \begin{bmatrix}
+        X_A(L)\\
+        X_B(L)\\
+        X_C(L)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        1 & 1 & 1\\
+        1 & 0 & 0\\
+        0 & 1 & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        X_A(L-1)\\
+        X_B(L-1)\\
+        X_C(L-1)
+    \end{bmatrix}
+\end{align*}
+$$
+
+There's a nice interpretation of matrix values here that we can use to construct these matrices in more mindless way: the value at $$(i, j)$$ tells you if you can move from state $$j$$ to state $$i$$. For example, $$(1, 3) = 1$$ tells us that we can move from state $$C$$ to state $$A$$, but $$(2, 3) = 0$$ tells us that we cannot move from state $$C$$ to state $$B$$. We need to define an initial input for this recursion, and so in this case we set $$\mathbf{X}(1)$$ to be $$[1, 1, 0]^T$$ since we can begin a sequence with a 0 or a 1, but not a 11.
+
+We will call matrices of the form above $$H_M$$, where again $$M$$ is the streak length we are interested in. In this case we have defined $$H_3$$.
+
+In general we can say  $$\mathbf{X}(L) = H_M^{L-1}\mathbf{X}(1).$$
+
+It's also the case that $$H_M$$ will always have full rank. Then we can decompose $$H_M$$ as $$H_M = U \Lambda U^{-1}$$, where $$\Lambda$$ is the diagonal matrix of eigen values. Basic linear algebra then tells us that $$H_M^{L-1} = U \Lambda^{L-1} U^{-1}$$, and so finally, 
+
+$$\mathbf{X}(L) = U \Lambda^{L-1} U^{-1} \mathbf{X}(1).$$
+
+This is a great result for us, because it tells us that once we have the matrix decomposition associated with a given $$M$$, we can easily find the number of $$L$$-sequences for any $$L$$.
+
+The only real snag is that we have to define a new matrix and invert it for a different value of $$M$$. Fortunately, the pattern is quite simple, and for any $$M$$ we can write the matrix $$H_M$$ as
+
+
+$$
+\begin{align*}
+    H_M =
+    \begin{bmatrix}
+        1 & 1 & 1 & \dots & 1 & 1\\
+        1 & 0 & 0 & \dots & 0 & 0\\
+        0 & 1 & 0 & \dots & 0 & 0\\
+        0 & 0 & 1 & \dots & 0 & 0\\
+        \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+        0 & 0 & 0 & \dots & 1 & 0
+    \end{bmatrix}
+\end{align*}
+$$
+
+
+With initial conditions $$X(1) = [1, 1, 0, ..., 0]^T$$.
+
+### The General Case
+
+The nice thing about this method is that it generalizes quite well for other values of $$p$$. 
+
+Now, rather than counting cases, we want to count probabilities of cases. If we let the probability of a 1 be $$p$$ and the probability of a 0 be $$q = 1-p$$, then the only modification we need to make is changing 1's with the probability of coming from that state:
+
+
+$$
+\begin{align*}
+    \mathbf{P}(L) = 
+    \begin{bmatrix}
+        P_1(L)\\
+        P_2(L)\\
+        P_3(L)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        q & q & q\\
+        p & 0 & 0\\
+        0 & p & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+        P_1(L-1)\\
+        P_2(L-1)\\
+        P_3(L-1)
+    \end{bmatrix}
+\end{align*}
+$$
+
+
+Then we can follow the procedure exactly as we did before. Note that the transpose of this matrix is *almost* a state transition probability matrix, but not quite. 
+
+### Connection to previous method
+
+Even if this method makes sense, it still might not be clear what the underlying connection to the previous method is. To see it, we have to (unsurprisingly) look at the eigenvalues of the matrix $$H_M$$ in the simple counting case (where p = 0.5).
+
+First note that by using the decomposition of $$H_M$$, we can write the number of streaks as a linear combination of our eigenvalues,
+
+$$X(L) = \lambda_1^{L-1}Y_1 + \lambda_2^{L-1}Y_2 + ... + \lambda_M^{L-1}Y_M,$$
+
+where the $$Y_i$$'s are just some function of our intial values and the eigenvectors. It turns out that the characteristic polynomial of $$H_M$$ is of the form 
+
+$$\lambda^M - \lambda^{M-1} - ... - 1.$$ 
+
+This characteristic polynomial should look familiar; in the previous method, we had that the generating function of an $$M^{th}$$ order Fibonacci sequence was given by
+
+$$\frac{x^{M-1}}{x^M - x^{M-1} - ... - 1},$$
+
+so the denominator is just our characteristic polynomial, and the poles of this generating function are our eigenvalues. What do the poles have to do with the terms in our seies? It's easy to see the connection if we note that a generating function $$f(x)$$ will generate the same coefficients as $$f(1/x)$$ if we let $$n$$ tend backwards (essentially we use a Laurent series). First, start by factoring the denominator, allowing for complex roots, $$\lambda_i$$:
+
+$$
+\begin{align*}
+\frac{x^{M-1}}{x^M - x^{M-1} - ... - 1} &= \frac{x^{M-1}}{(x-\lambda_1)(x-\lambda_2)...(x-\lambda_M)}
+\end{align*}
+$$
+
+Now substitute $$1/z$$ and do some algebra:
+
+$$
+\begin{align*}
+\frac{1/z^{M-1}}{(1/z-\lambda_1)(1/z-\lambda_2)...(1/z-\lambda_M)} &= \frac{z^M}{z^M}\frac{1/z^{M-1}}{(1/z-\lambda_1)(1/z-\lambda_2)...(1/z-\lambda_M)}\\[10pt]
+&=\frac{z}{(1-z\lambda_1)(1-z\lambda_2)...(1-z\lambda_M)}\\[10pt]
+&= \frac{zc_1}{(1-z\lambda_1)} + \frac{zc_2}{(1-z\lambda_2)} + ... + \frac{zc_M}{(1-z\lambda_M)}
+\end{align*}
+$$
+
+Where in the final line we do partial fraction decomposition (again allowing for complex roots) to get a summation of terms with some constants $$c_i$$.
+
+Now recall that functions of the form $$\frac{x}{1-xr}$$ are the generating functions for $$\sum_{n=1}^\infty x(xr)^{n}$$, which means that the $$L^{th}$$ term of any of these series is just $$r^{L-1}$$. Then we can write the $$L^{th}$$ term of the series generated by $$\frac{z}{(1-z\lambda_1)(1-z\lambda_2)...(1-z\lambda_M)}$$ as:
+
+$$\lambda_1^{L-1}c_1 + \lambda_2^{L-1}c_2 + ... + \lambda_M^{L-1}c_M,$$
+
+which is exactly what we had above from our matrix equation. The bottom line here is that the matrix $$H_M$$ that we defined earlier can be thought of as the matrix representation of a $$M^{th}$$-order Fibonacci sequence. Pretty neat stuff!
+
