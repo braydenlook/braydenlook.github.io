@@ -31,8 +31,6 @@ Define $$\mathbf{X}(L) = [X_A(L), X_B(L), X_C(L)]^T$$, where $$X_i(L)$$ is the n
     <img width="125" src="/images/valid_states_example.PNG">
 </p>
 
-85C8DD
-FAA0A0
 
 Sequences colored <span style="color: #009B55;">green</span> are sequences that ended at <span style="color: #009B55;">state A</span>, sequences colored <span style="color: #75B2C6;">blue</span> are sequences that ended at <span style="color: #75B2C6;">state B</span>, and sequences colored <span style="color: #EC8989;">red</span> are sequences that ended at <span style="color: #EC8989;">state C</span>. Uncolored sequences are invalid sequences.
 
