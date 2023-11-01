@@ -18,7 +18,7 @@ In this case we'll take a slightly different route. Rather than explicitely usin
 Let's start by defining a state process via a graph:
 
 <p align="center">
-    <img width="250" src="/images/state_diagram.png">
+    <img width="250" src="/images/state_diagram.PNG">
 </p>
 
 Now let State A represent a 0, state B represent a 1, and state C represent two consecutive 1. By forcing state C to return to state A, sequences that contain at least three 1s in a row are not possible in this process. Thus, we have a process that describes sequences of arbitrary length $$L$$ that do *not* contain a streak of at least length 3.
@@ -28,7 +28,7 @@ Note that not only does B represent a 1, it represents a 1 preceded by a zero (e
 Define $$\mathbf{X}(L) = [X_A(L), X_B(L), X_C(L)]^T$$, where $$X_i(L)$$ is the number of valid $$L$$-sequences (remember that by valid we mean *no* 3-streaks) that end at state $$i$$. For example, let's let $$L = 4$$ and look at the possible cases:
 
 <p align="center">
-    <img width="125" src="/images/valid_states_example.png">
+    <img width="125" src="/images/valid_states_example.PNG">
 </p>
 
 85C8DD
