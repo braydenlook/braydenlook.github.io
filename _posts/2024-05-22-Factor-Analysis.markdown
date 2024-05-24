@@ -11,7 +11,7 @@ I spent a good chunk of time trying to understand factor analysis as fundamental
 
 I'm writing this as the article I *wished* I stumbled upon while learning. It is not a complete treatment of factor analysis, but is hopefully a good resource for anyone who thinks about these things like me (a psychopath).
 
-Really, this first part is hardly about factor analysis. It goes over a classic factor analysis problem, aims to formulate the problem statement very generally, go through what an intuitive solution might be, and then show why that ultimately runs into an issue. The next post will be about its implementation and a nice geometric interpretation of that implementation.
+Really, this first part is hardly about factor analysis. It goes over a classic factor analysis problem, aims to formulate the problem statement very generally, goes through what an intuitive solution might be, and then shows why that ultimately runs into an issue. The next post will be about its implementation and a nice geometric interpretation of that implementation.
 
 ## What is it?
 
