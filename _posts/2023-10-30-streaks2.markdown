@@ -83,6 +83,7 @@ $$
         X_B(L-1)\\
         X_C(L-1)
     \end{bmatrix}
+	.
 \end{align*}
 $$
 
@@ -112,11 +113,12 @@ $$
         \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
         0 & 0 & 0 & \dots & 1 & 0
     \end{bmatrix}
+	,
 \end{align*}
 $$
 
 
-With initial conditions $$X(1) = [1, 1, 0, ..., 0]^T$$.
+with initial conditions $$X(1) = [1, 1, 0, ..., 0]^T$$.
 
 ### The General Case
 
@@ -144,6 +146,7 @@ $$
         P_2(L-1)\\
         P_3(L-1)
     \end{bmatrix}
+	.
 \end{align*}
 $$
 
@@ -152,7 +155,7 @@ Then we can follow the procedure exactly as we did before. Note that the transpo
 
 ### Connection to previous method
 
-Even if this method makes sense, it still might not be clear what the underlying connection to the previous method is. To see it, we have to (unsurprisingly) look at the eigenvalues of the matrix $$H_M$$ in the simple counting case (where p = 0.5).
+Even if this method makes sense, it still might not be clear what the underlying connection to the previous method is. To see it, we have to (unsurprisingly) look at the eigenvalues of the matrix $$H_M$$. Let's do so in the simple counting case (where p = 0.5).
 
 First note that by using the decomposition of $$H_M$$, we can write the number of streaks as a linear combination of our eigenvalues,
 

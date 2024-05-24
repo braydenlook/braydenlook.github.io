@@ -8,8 +8,10 @@ Here are some relevant and/or enjoyable courses I've taken:
 
 # Colorado State University
 - STAT 530: Mathematical Statistics
+- STAT 540: Data Analysis and Regression
 - STAT 555: Statistical Consulting
-- STAT 520: Data Analysis and Regression
+- STAT 6/720: (Measure Theoretic) Probability
+- ECE 516: Information Theory
 
 # UCLA
 - ECE 113: Digital Signal Processing

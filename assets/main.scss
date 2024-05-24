@@ -21,9 +21,12 @@ $spacing-unit:     30px !default;
 
 $text-color:       #454545 !default;
 $header-background-color: lighten(#dae4d9, 7%) !default;
-$background-color: #fcfbf7 !default;
-$footer-background-color: #fcfbf7 !default;
-$brand-color:      darken(#9c815d, 17%) !default;
+//$background-color: #fcfbf7 !default;
+$background-color: #f9fbfb !default;
+
+$footer-background-color: #f9fbfb !default;
+// $brand-color:      darken(#9c815d, 17%) !default;
+$brand-color:      lighten(#1E4D2B, 2%) !default;
 
 $grey-color:       #828282 !default;
 $grey-color-light: lighten($grey-color, 40%) !default;
@@ -172,11 +175,11 @@ a {
   text-decoration: none;
 
   &:visited {
-    color: lighten($brand-color, 5%);
+    color: lighten($brand-color, 7%);
   }
 
   &:hover {
-    color: darken($brand-color, 2%);
+    color: darken($brand-color, 5%);
     text-decoration: underline;
   }
 
