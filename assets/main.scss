@@ -22,7 +22,7 @@ $spacing-unit:     30px !default;
 $text-color:       #454545 !default;
 $header-background-color: lighten(#dae4d9, 7%) !default;
 //$background-color: #fcfbf7 !default;
-$background-color: #f9fbfb !default;
+$background-color: #ffffff !default;
 
 $footer-background-color: #f9fbfb !default;
 // $brand-color:      darken(#9c815d, 17%) !default;
@@ -35,7 +35,8 @@ $grey-color-dark:  darken($grey-color, 25%) !default;
 $table-text-align: left !default;
 
 // Width of the content area
-$content-width:    800px !default;
+//$content-width:    800px !default;
+$content-width:    840px !default;
 
 $on-palm:          600px !default;
 $on-laptop:        800px !default;
@@ -171,11 +172,11 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: $brand-color;
+  color: lighten($brand-color, 12%);
   text-decoration: none;
 
   &:visited {
-    color: lighten($brand-color, 7%);
+    color: lighten($brand-color, 15%);
   }
 
   &:hover {

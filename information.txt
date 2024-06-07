@@ -58,3 +58,5 @@ At some point I should look into these things more closely and write a well-stru
 
 
 This post seems useful for organizing later on: https://stackoverflow.com/questions/38725850/jekyll-common-page-post-config
+
+this post seems useful for making a dark mode: https://derekkedziora.com/blog/dark-mode-revisited
