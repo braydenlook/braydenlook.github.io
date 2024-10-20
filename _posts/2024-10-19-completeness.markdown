@@ -14,7 +14,7 @@ In short, completeness gives us the *uniqueness* part of UMVUEs, which is import
 
 ### Linear Algebra Review
 
-Suppose we have a matrix $A \in \mathbb{R}^{n \times m}$. This matrix can be thought of as a mapping $A: \mathbb{R}^m \rightarrow \mathbb{R}^n$ in the sense that if we given $A$ an input $x \in \mathbb{R}^m$, then we get an output $y \in \mathbb{R}^n$ such that $Ax = y$. 
+Suppose we have a matrix $A \in \mathbb{R}^{n \times m}$. This matrix can be thought of as a mapping $A: \mathbb{R}^m \rightarrow \mathbb{R}^n$ in the sense that if we give $A$ an input $x \in \mathbb{R}^m$, then we get an output $y \in \mathbb{R}^n$ such that $Ax = y$. 
 
 Denote the $i^{th}$ row of $A$ as $A^i$. Then we can write out the matrix multiplication with $x$ as
 
@@ -57,7 +57,7 @@ When we have the property that $Ax = 0$ only when $x = 0$, we call the mapping $
 This property follows from the statement $Ax = 0$ only when $x = 0$ because if $Ax_1 = y$ and $Ax_2 = y$, then $Ax_1 - Ax_2 = A(x_1 - x_2) = 0$. I.e., if $A$ is not injective, then we can always find a non-zero vector $x \in \mathbb{R}^m$ for which $Ax = 0$ by just subtracting two vectors that map to the same output.
 ### Making the Connection
 
-Now we consider a family of pdfs $\{f_\theta\}$ indexed by $\theta$. For example, we could say that $f_\theta$ represents a Normal distribution with variance 1 and mean $\theta$. So we have a set of pdfs, where each element of the set is just a unit-variance normal pdf with different means. 
+Now we consider a family of pdfs $\{f_\theta\}$ indexed by $\theta$. For example, we could say that $f_\theta$ represents a Normal distribution with variance 1 and mean $\theta$. Each pdf in the set is a normal distribution with unit variance, but each element has a different value for the mean.
 
 Now let's think about taking the expectation of a function of some statistic $T$, where the pdf of $T$ is $f_\theta$. This is given by the expression
 
@@ -161,13 +161,11 @@ Formally, the Rao-Blackwell Theorem states:
 
 > Let $$W$$ be any unbiased estimator of $$h(\theta)$$, and let $$T$$ be a sufficient statistic for $$\theta$$. Define $\phi(T) := \mathbb{E}[W\|T]$. Then $$\mathbb{E}_{\theta}[\phi(T)] = h(\theta)$$ and $$\text{Var}(\phi(T)) \le \text{Var}(W)$$ for all $$\theta$$. That is, $$\phi(T)$$ is a uniformly better unbiased estimator of $$h(\theta)$$.
 
-Less formally, Rao-Blackwell theorem states that an estimator based on a sufficient statistic will have uniformly lower variance than an estimator based on a statistic that is not sufficient. So if we want the lowest variance possible for all possible $\theta$, we need a sufficient statistic.
+Less formally, Rao-Blackwell theorem states that an unbiased estimator based on a sufficient statistic will have uniformly lower variance than an unbiased estimator based on a statistic that is not sufficient. So if we want the lowest variance possible for all possible $\theta$, we need a sufficient statistic.
 
 So if we have an unbiased estimator $W$ that is based on a statistic $S$ that is not sufficient, we can improve it with a sufficient statistic $T$ by defining $g(T) = \mathbb{E}[W\|T]$. Now we have a better estimator. But what if there is another unbiased estimator $V$ and we defined $f(T) = \mathbb{E}[V\|T]$? How do we know if $g(T)$ or $f(T)$ is better? What if there are a thousand other unbiased estimators? How can we know if the estimator we chose is the best?
 
-If $T$ is not complete, then we wouldn't know. But if $T$ is complete, then we get uniqueness from injectivity! In other words, if we started with $W$ and defined $g(T) := \mathbb{E}[W\|T]$ to get an unbiased estimator that is a function of a complete sufficient statistic, then there is no other function $f$ for which $$\mathbb{E}_{\theta}[f(T)] = h(\theta)$$ for all $\theta.$ 
-
-How do we know this just from completeness? The same argument as in the linear algebra case. Suppose that $T$ is complete, and suppose such an $f$ exists.  Define $\tilde f(T) := f(T) - g(T)$. Then 
+If $T$ is not complete, then we wouldn't know. But if $T$ is complete, then we get uniqueness from injectivity! How do we know this just from completeness? The same argument as in the linear algebra case. Suppose that $T$ is complete, and suppose such a $g$ and $f$ exist.  Define $\tilde f(T) := f(T) - g(T)$. Then 
 
 $$
 \begin{aligned}
