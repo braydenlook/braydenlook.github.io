@@ -14,6 +14,38 @@
     </main>
 
     {%- include footer.html -%}
+	
+	<script>
+	  document.addEventListener("DOMContentLoaded", function () {
+		const toggles = document.querySelectorAll(".toggle-button");
+
+		toggles.forEach((toggle) => {
+		  // Save the initial button text for later use
+		  const initialText = toggle.textContent;
+		  const expandedText = toggle.dataset.expandedText || "Collapse"; // Use data attribute for custom text
+
+		  toggle.addEventListener("click", function () {
+			const content = this.nextElementSibling;
+
+			if (content.style.maxHeight) {
+			  // Collapse the content
+			  content.style.maxHeight = null;
+			  content.style.border = "1px solid #ffffff";
+			  this.textContent = initialText;
+			  this.classList.remove("active"); // Remove active class for triangle rotation
+			} else {
+			  // Expand the content
+			  content.style.maxHeight = content.scrollHeight + "px";
+			  content.style.border = "1px solid #ffffff";
+			  this.textContent = expandedText;
+			  this.classList.add("active"); // Add active class for triangle rotation
+			}
+		  });
+		});
+	  });
+	</script>
+	<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+	<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 
   </body>
 
