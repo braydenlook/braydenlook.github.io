@@ -5,27 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NBA play-by-play</title>
 <style>
-  :root { color-scheme: light; }
+  :root { color-scheme: light dark; }
   body {
     font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-	background: #F6F9FA;
     max-width: 60rem;
     margin: 1rem auto;
     padding: 0 1rem;
   }
-  body.wide { max-width: 120rem; }
   a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
   h1 { font-size: 1rem; margin: 1rem 0 0; }
   #status { opacity: .6; margin: .25rem 0 1rem; }
   .gamerow, .play { white-space: pre-wrap; }
   .gamerow.live, .play.scoring { font-weight: bold; }
   /* hanging indent: wrapped play text lines up after the 24-character prefix */
   .play { padding-left: 24ch; text-indent: -24ch; }
-  .toggles { margin: 0 0 1rem; }
-  label { margin-right: 2ch; white-space: nowrap; }
 
-  /* box score on the left, play-by-play on the right */
-  .cols { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0 5ch; align-items: start; }
+  /* the two tabs: Plays and Box score */
+  .tabs { margin: 0 0 1rem; }
+  .tabs button { margin-right: 3ch; padding: .25rem 0; opacity: .6; }
+  .tabs button.on { opacity: 1; font-weight: bold; text-decoration: underline; text-underline-offset: .3em; }
+
+  /* the "▾ 8 more" button under the plays */
+  #more { display: block; width: 100%; text-align: left; padding: .75rem 0; opacity: .6; }
+  #more[hidden] { display: none; }
+
+  /* box score */
   #box { overflow-x: auto; }  /* on phones the tables scroll sideways instead of the page */
   table { border-collapse: collapse; margin: 0 0 1.5rem; }
   th, td { padding: 0 0 0 1.5ch; text-align: right; white-space: pre; }
@@ -37,10 +42,7 @@
   tr.total td { border-top: 1px dashed; }
   tr.dim td, p.dim { opacity: .6; }
 
-  @media (max-width: 75rem) {  /* not enough room side by side: box score goes above the plays */
-    .cols { grid-template-columns: minmax(0, 1fr); }
-  }
-  @media (max-width: 40rem) {
+  @media (max-width: 40rem) {  /* phones */
     .play { padding-left: 0; text-indent: 0; margin-bottom: .3rem; }
   }
 </style>
@@ -53,6 +55,7 @@ const API = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/';
 const LIVE_MS = 10000;  // refresh interval while a game is in progress
 const PRE_MS  = 60000;  // game hasn't started yet
 const LIST_MS = 30000;  // list of today's games
+const PAGE = 8;         // plays shown at first, and how many more each tap on "more" adds
 // Box score columns, by ESPN's labels ('OREB' and 'DREB' are also available).
 const BOX_COLS = ['MIN', 'PTS', 'FG', '3PT', 'FT', 'REB', 'AST', 'TO', 'STL', 'BLK', 'PF', '+/-'];
 
@@ -123,8 +126,9 @@ async function updateList() {
   return LIST_MS;
 }
 
-// ---------- one game: box score + play-by-play ----------
-let game = null;  // { plays, teams } from the latest fetch
+// ---------- one game: plays tab + box score tab ----------
+let game = null;     // { plays, teams } from the latest fetch
+let shown = PAGE;    // how many plays the Plays tab shows; "more" adds PAGE
 
 function renderLineScore(comp) {
   const teams = [side(comp, 'away'), side(comp, 'home')];
@@ -182,21 +186,19 @@ function renderBox(data, comp, live) {
 
 function renderPlays() {
   if (!game) return;
-  let plays = game.plays;
-  if ($('scoring').checked) plays = plays.filter(p => p.scoringPlay);
-  if ($('newest').checked) plays = plays.slice().reverse();
+  const plays = game.plays.slice().reverse();  // newest first
   const box = $('plays');
-  if (!plays.length) {
-    box.textContent = game.plays.length ? 'No scoring plays yet.' : 'No plays yet.';
-    return;
-  }
-  box.replaceChildren(...plays.map(p => el('div', [
+  if (!plays.length) box.textContent = 'No plays yet.';
+  else box.replaceChildren(...plays.slice(0, shown).map(p => el('div', [
     periodLabel(p.period?.number ?? 0).padEnd(3),
     (p.clock?.displayValue ?? '').padStart(5),
     `${p.awayScore}-${p.homeScore}`.padStart(7),
     (game.teams[p.team?.id] ?? '').padEnd(5),
     (p.text ?? '').replace(/\s+/g, ' ').trim(),
   ].join(' '), 'play' + (p.scoringPlay ? ' scoring' : ''))));
+  const older = plays.length - shown;  // plays not shown yet
+  $('more').hidden = older <= 0;
+  $('more').textContent = `▾ ${Math.min(PAGE, older)} more`;
 }
 
 async function updateGame() {
@@ -208,7 +210,7 @@ async function updateGame() {
   const teams = {};
   for (const c of comp.competitors) teams[c.team.id] = c.team.abbreviation;
   game = { plays: data.plays || [], teams };
-  // The box score and the plays come from the same response, so they always match.
+  // Both tabs are redrawn from the same response, so they always match.
   renderBox(data, comp, st.state === 'in');
   renderPlays();
   if (st.state === 'in')  { stamp(`refreshing every ${LIVE_MS / 1000} s`); return LIVE_MS; }
@@ -220,21 +222,25 @@ async function updateGame() {
 // ---------- page setup and refresh loop ----------
 const main = $('main');
 if (gameId) {
-  document.body.className = 'wide';
   main.innerHTML = `
     <p><a id="back">← NBA games</a></p>
     <h1 id="title">Loading…</h1>
     <p id="status"></p>
-    <div class="cols">
-      <section id="box"></section>
-      <section>
-        <p class="toggles"><label><input type="checkbox" id="newest" checked> newest first</label>
-           <label><input type="checkbox" id="scoring"> scoring plays only</label></p>
-        <div id="plays"></div>
-      </section>
-    </div>`;
+    <nav class="tabs"><button data-tab="plays-tab" class="on">Plays</button><button data-tab="box">Box score</button></nav>
+    <section id="plays-tab">
+      <div id="plays"></div>
+      <button id="more" hidden></button>
+    </section>
+    <section id="box" hidden></section>`;
   $('back').href = location.pathname;
-  $('newest').onchange = $('scoring').onchange = renderPlays;
+  const tabs = [...document.querySelectorAll('.tabs button')];
+  for (const b of tabs) b.onclick = () => {
+    for (const t of tabs) {
+      t.classList.toggle('on', t === b);
+      $(t.dataset.tab).hidden = t !== b;
+    }
+  };
+  $('more').onclick = () => { shown += PAGE; renderPlays(); };
 } else {
   main.innerHTML = '<h1>NBA games</h1><p id="status">Loading…</p><div id="games"></div>';
 }
