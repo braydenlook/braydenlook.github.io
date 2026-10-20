@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Play-by-play</title>
+<title>NBA play-by-play</title>
 <style>
   :root { color-scheme: light dark; }
   body {
@@ -12,46 +12,64 @@
     margin: 1rem auto;
     padding: 0 1rem;
   }
+  body.wide { max-width: 120rem; }
   a { color: inherit; }
-  nav a { margin-right: 1.5ch; }
-  nav a.on { font-weight: bold; text-decoration: none; }
   h1 { font-size: 1rem; margin: 1rem 0 0; }
   #status { opacity: .6; margin: .25rem 0 1rem; }
-  .game, .play { white-space: pre-wrap; }
-  .game.live, .play.scoring { font-weight: bold; }
+  .gamerow, .play { white-space: pre-wrap; }
+  .gamerow.live, .play.scoring { font-weight: bold; }
   /* hanging indent: wrapped play text lines up after the 24-character prefix */
   .play { padding-left: 24ch; text-indent: -24ch; }
+  .toggles { margin: 0 0 1rem; }
   label { margin-right: 2ch; white-space: nowrap; }
+
+  /* box score on the left, play-by-play on the right */
+  .cols { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0 5ch; align-items: start; }
+  #box { overflow-x: auto; }  /* on phones the tables scroll sideways instead of the page */
+  table { border-collapse: collapse; margin: 0 0 1.5rem; }
+  th, td { padding: 0 0 0 1.5ch; text-align: right; white-space: pre; }
+  th:first-child, td:first-child { padding-left: 0; text-align: left; }
+  th { font-weight: normal; opacity: .6; }
+  th.team { font-weight: bold; opacity: 1; }
+  td.note { text-align: left; }
+  td.score, tr.total td { font-weight: bold; }
+  tr.total td { border-top: 1px dashed; }
+  tr.dim td, p.dim { opacity: .6; }
+
+  @media (max-width: 75rem) {  /* not enough room side by side: box score goes above the plays */
+    .cols { grid-template-columns: minmax(0, 1fr); }
+  }
   @media (max-width: 40rem) {
     .play { padding-left: 0; text-indent: 0; margin-bottom: .3rem; }
   }
 </style>
 </head>
 <body>
-<nav id="leagues"></nav>
 <main id="main"></main>
 <script>
 // Data: ESPN's public (undocumented) JSON API, which accepts requests from any site.
-const API = 'https://site.api.espn.com/apis/site/v2/sports/basketball/';
-const LEAGUES = {
-  nba:   { name: 'NBA',   path: 'nba' },
-  wnba:  { name: 'WNBA',  path: 'wnba' },
-  ncaam: { name: 'NCAAM', path: 'mens-college-basketball',   list: '?groups=50&limit=500', halves: true },
-  ncaaw: { name: 'NCAAW', path: 'womens-college-basketball', list: '?groups=50&limit=500' },
-};
+const API = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/';
 const LIVE_MS = 10000;  // refresh interval while a game is in progress
 const PRE_MS  = 60000;  // game hasn't started yet
 const LIST_MS = 30000;  // list of today's games
+// Box score columns, by ESPN's labels ('OREB' and 'DREB' are also available).
+const BOX_COLS = ['MIN', 'PTS', 'FG', '3PT', 'FT', 'REB', 'AST', 'TO', 'STL', 'BLK', 'PF', '+/-'];
 
-const params = new URLSearchParams(location.search);
-const key = LEAGUES[params.get('league')] ? params.get('league') : 'nba';
-const league = LEAGUES[key];
-const gameId = params.get('game');
+const gameId = new URLSearchParams(location.search).get('game');
 const $ = id => document.getElementById(id);
 
-$('leagues').innerHTML = Object.entries(LEAGUES)
-  .map(([k, l]) => `<a href="?league=${k}"${k === key ? ' class="on"' : ''}>${l.name}</a>`)
-  .join('');
+// Small DOM helpers; text always goes in through textContent.
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text != null) e.textContent = text;
+  if (cls) e.className = cls;
+  return e;
+}
+function tr(cells, cls) {  // a table row; plain strings become <td> cells
+  const row = el('tr', null, cls);
+  row.append(...cells.map(c => (c instanceof Node ? c : el('td', c))));
+  return row;
+}
 
 async function getJSON(url) {
   const res = await fetch(url, { cache: 'no-store' });
@@ -81,20 +99,21 @@ function stamp(note) {
   $('status').textContent = 'updated ' + new Date().toLocaleTimeString() + (note ? ' · ' + note : '');
 }
 
+const otLabel = n => (n > 1 ? n : '') + 'OT';  // 1 -> OT, 2 -> 2OT
+const periodLabel = n => (n <= 4 ? 'Q' + n : otLabel(n - 4));
+
 // ---------- today's games ----------
 async function updateList() {
-  const data = await getJSON(API + league.path + '/scoreboard' + (league.list || ''));
+  const data = await getJSON(API + 'scoreboard');
   const events = data.events || [];
   const box = $('games');
   if (!events.length) box.textContent = 'No games today.';
   else box.replaceChildren(...events.map(ev => {
     const comp = ev.competitions[0], st = ev.status.type;
     const label = matchup(comp, st.state);
-    const link = document.createElement('a');
-    link.href = `?league=${key}&game=${ev.id}`;
-    link.textContent = label;
-    const row = document.createElement('div');
-    row.className = 'game' + (st.state === 'in' ? ' live' : '');
+    const link = el('a', label);
+    link.href = '?game=' + ev.id;
+    const row = el('div', null, 'gamerow' + (st.state === 'in' ? ' live' : ''));
     row.append(link, ' '.repeat(Math.max(2, 24 - label.length)) +
                      (st.state === 'pre' ? localTime(ev.date) : st.shortDetail));
     return row;
@@ -103,13 +122,61 @@ async function updateList() {
   return LIST_MS;
 }
 
-// ---------- one game's play-by-play ----------
+// ---------- one game: box score + play-by-play ----------
 let game = null;  // { plays, teams } from the latest fetch
 
-function periodLabel(n) {
-  const reg = league.halves ? 2 : 4;  // men's college plays halves
-  if (n <= reg) return (league.halves ? 'H' : 'Q') + n;
-  return (n - reg > 1 ? n - reg : '') + 'OT';
+function renderLineScore(comp) {
+  const teams = [side(comp, 'away'), side(comp, 'home')];
+  const n = Math.max(4, ...teams.map(c => c.linescores?.length ?? 0));
+  const labels = Array.from({ length: n }, (_, i) => (i < 4 ? String(i + 1) : otLabel(i - 3)));
+  const table = el('table');
+  table.append(tr([el('th'), ...labels.map(l => el('th', l)), el('th', 'T')]));
+  for (const c of teams) {
+    const ls = c.linescores ?? [];
+    table.append(tr([c.team.abbreviation, ...labels.map((_, i) => ls[i]?.displayValue ?? ''),
+                     el('td', c.score ?? '', 'score')]));
+  }
+  return table;
+}
+
+function pct(madeAtt) {  // '29-61' -> '47.5%'
+  const [made, att] = String(madeAtt).split('-').map(Number);
+  return att ? (100 * made / att).toFixed(1) + '%' : '';
+}
+
+function renderTeamBox(t, live) {
+  const g = t.statistics?.[0];
+  const table = el('table');
+  table.append(tr([el('th', t.team.abbreviation, 'team'), ...BOX_COLS.map(c => el('th', c))]));
+  if (!g) return table;
+  const idx = BOX_COLS.map(c => (g.names ?? []).indexOf(c));
+  const pick = values => idx.map(i => (i < 0 ? '' : values?.[i] ?? ''));
+  const span = (text, cls) => { const td = el('td', text, cls); td.colSpan = BOX_COLS.length; return td; };
+  const indent = live ? '  ' : '';  // room for the on-court marker
+  let bench = false;
+  for (const a of g.athletes ?? []) {
+    if (!a.starter && !bench) {
+      bench = true;
+      table.append(tr([indent + 'bench', span('')], 'dim'));
+    }
+    const name = (live && a.active ? '• ' : indent) + (a.athlete?.shortName ?? '');
+    if (a.stats?.length) table.append(tr([name, ...pick(a.stats)]));
+    else table.append(tr([name, span(a.didNotPlay ? 'DNP: ' + (a.reason ?? '').toLowerCase() : '', 'note')], 'dim'));
+  }
+  const totals = pick(g.totals);
+  table.append(tr([indent + 'TEAM', ...totals], 'total'));
+  table.append(tr(['', ...totals.map((v, k) => (['FG', '3PT', 'FT'].includes(BOX_COLS[k]) ? pct(v) : ''))], 'dim'));
+  return table;
+}
+
+function renderBox(data, comp, live) {
+  const teams = data.boxscore?.players;
+  if (!teams?.length) { $('box').textContent = 'The box score starts at tip-off.'; return; }
+  const awayId = side(comp, 'away').team.id;
+  const ordered = teams.slice().sort((a, b) => (b.team.id === awayId) - (a.team.id === awayId));  // away team first
+  const parts = [renderLineScore(comp), ...ordered.map(t => renderTeamBox(t, live))];
+  if (live) parts.push(el('p', '• on court', 'dim'));
+  $('box').replaceChildren(...parts);
 }
 
 function renderPlays() {
@@ -122,22 +189,17 @@ function renderPlays() {
     box.textContent = game.plays.length ? 'No scoring plays yet.' : 'No plays yet.';
     return;
   }
-  box.replaceChildren(...plays.map(p => {
-    const row = document.createElement('div');
-    row.className = 'play' + (p.scoringPlay ? ' scoring' : '');
-    row.textContent = [
-      periodLabel(p.period?.number ?? 0).padEnd(3),
-      (p.clock?.displayValue ?? '').padStart(5),
-      `${p.awayScore}-${p.homeScore}`.padStart(7),
-      (game.teams[p.team?.id] ?? '').padEnd(5),
-      (p.text ?? '').replace(/\s+/g, ' ').trim(),
-    ].join(' ');
-    return row;
-  }));
+  box.replaceChildren(...plays.map(p => el('div', [
+    periodLabel(p.period?.number ?? 0).padEnd(3),
+    (p.clock?.displayValue ?? '').padStart(5),
+    `${p.awayScore}-${p.homeScore}`.padStart(7),
+    (game.teams[p.team?.id] ?? '').padEnd(5),
+    (p.text ?? '').replace(/\s+/g, ' ').trim(),
+  ].join(' '), 'play' + (p.scoringPlay ? ' scoring' : ''))));
 }
 
 async function updateGame() {
-  const data = await getJSON(API + league.path + '/summary?event=' + encodeURIComponent(gameId));
+  const data = await getJSON(API + 'summary?event=' + encodeURIComponent(gameId));
   const comp = data.header.competitions[0], st = comp.status.type;
   const title = matchup(comp, st.state) + ' · ' +
                 (st.state === 'pre' ? 'starts ' + localTime(comp.date) : st.shortDetail);
@@ -145,6 +207,8 @@ async function updateGame() {
   const teams = {};
   for (const c of comp.competitors) teams[c.team.id] = c.team.abbreviation;
   game = { plays: data.plays || [], teams };
+  // The box score and the plays come from the same response, so they always match.
+  renderBox(data, comp, st.state === 'in');
   renderPlays();
   if (st.state === 'in')  { stamp(`refreshing every ${LIVE_MS / 1000} s`); return LIVE_MS; }
   if (st.state === 'pre') { stamp('waiting for tip-off'); return PRE_MS; }
@@ -155,17 +219,23 @@ async function updateGame() {
 // ---------- page setup and refresh loop ----------
 const main = $('main');
 if (gameId) {
+  document.body.className = 'wide';
   main.innerHTML = `
-    <p><a href="?league=${key}">← ${league.name} games</a></p>
+    <p><a id="back">← NBA games</a></p>
     <h1 id="title">Loading…</h1>
     <p id="status"></p>
-    <p><label><input type="checkbox" id="newest" checked> newest first</label>
-       <label><input type="checkbox" id="scoring"> scoring plays only</label></p>
-    <div id="plays"></div>`;
+    <div class="cols">
+      <section id="box"></section>
+      <section>
+        <p class="toggles"><label><input type="checkbox" id="newest" checked> newest first</label>
+           <label><input type="checkbox" id="scoring"> scoring plays only</label></p>
+        <div id="plays"></div>
+      </section>
+    </div>`;
+  $('back').href = location.pathname;
   $('newest').onchange = $('scoring').onchange = renderPlays;
 } else {
-  document.title = league.name + ' play-by-play';
-  main.innerHTML = '<p id="status">Loading…</p><div id="games"></div>';
+  main.innerHTML = '<h1>NBA games</h1><p id="status">Loading…</p><div id="games"></div>';
 }
 
 let timer, busy = false;
